@@ -2,12 +2,20 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import ChatBotWidget from '@/components/ChatBotWidget'
 import Home from '@/pages/Home'
 import Login from '@/pages/Login'
 import Registro from '@/pages/Registro'
 import Dashboard from '@/pages/Dashboard'
 import Servicios from '@/pages/Servicios'
 import Contacto from '@/pages/Contacto'
+import Marketplace from '@/pages/Marketplace'
+import NuevoPedido from '@/pages/NuevoPedido'
+import MisPedidos from '@/pages/MisPedidos'
+import Perfil from '@/pages/Perfil'
+import Terminos from '@/pages/Terminos'
+import Privacidad from '@/pages/Privacidad'
+import RecuperarPassword from '@/pages/RecuperarPassword'
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,6 +23,7 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
       <Navbar />
       <div className="min-h-screen">{children}</div>
       <Footer />
+      <ChatBotWidget />
     </>
   )
 }
@@ -39,15 +48,22 @@ function AppRoutes() {
       <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
       <Route path="/servicios" element={<PublicLayout><Servicios /></PublicLayout>} />
       <Route path="/contacto" element={<PublicLayout><Contacto /></PublicLayout>} />
+      <Route path="/marketplace" element={<PublicLayout><Marketplace /></PublicLayout>} />
       <Route path="/como-funciona" element={<PublicLayout><ComoFunciona /></PublicLayout>} />
       <Route path="/trabaja-con-nosotros" element={<PublicLayout><TrabajaCon /></PublicLayout>} />
+      <Route path="/terminos" element={<PublicLayout><Terminos /></PublicLayout>} />
+      <Route path="/privacidad" element={<PublicLayout><Privacidad /></PublicLayout>} />
 
       {/* Auth — sin Navbar */}
       <Route path="/login" element={<><Navbar /><Login /></>} />
       <Route path="/registro" element={<><Navbar /><Registro /></>} />
+      <Route path="/recuperar-password" element={<><Navbar /><RecuperarPassword /></>} />
 
       {/* Protegidas */}
       <Route path="/dashboard" element={<RequireAuth><><Navbar /><Dashboard /></></RequireAuth>} />
+      <Route path="/nuevo-pedido" element={<RequireAuth><><Navbar /><NuevoPedido /></></RequireAuth>} />
+      <Route path="/mis-pedidos" element={<RequireAuth><><Navbar /><MisPedidos /></></RequireAuth>} />
+      <Route path="/perfil" element={<RequireAuth><><Navbar /><Perfil /></></RequireAuth>} />
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" replace />} />

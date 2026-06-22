@@ -5,6 +5,13 @@ const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
 
 interface CmsData { [key: string]: string }
 interface Servicio { id: string; nombre: string; descripcion: string; icono: string; activo: boolean; precio_base?: number }
+interface MotorizadoPublic {
+  id: string
+  disponible: boolean
+  perfiles: { nombre_completo: string; avatar_url: string | null; telefono: string | null }
+}
+
+
 
 const DEFAULT: CmsData = {
   hero_titulo:         'Tu delivery de confianza en Ocotal',
@@ -54,16 +61,20 @@ function useScrollReveal() {
 export default function Home() {
   const [cms, setCms] = useState<CmsData>(DEFAULT)
   const [servicios, setServicios] = useState<Servicio[]>(SERVICIOS_DEFAULT)
+  const [motorizados, setMotorizados] = useState<MotorizadoPublic[]>([])
   const rootRef = useScrollReveal()
 
   useEffect(() => {
     Promise.all([
       fetch(`${API_URL}/api/cms`).then(r => r.ok ? r.json() : null).catch(() => null),
       fetch(`${API_URL}/api/catalogo-servicios`).then(r => r.ok ? r.json() : null).catch(() => null),
-    ]).then(([cmsRes, svcRes]) => {
+      fetch(`${API_URL}/api/motorizados/public`).then(r => r.ok ? r.json() : null).catch(() => null),
+    ]).then(([cmsRes, svcRes, motRes]) => {
       if (cmsRes?.contenido) setCms({ ...DEFAULT, ...cmsRes.contenido })
       const svcs = svcRes?.data ?? svcRes
       if (Array.isArray(svcs) && svcs.length) setServicios(svcs.filter((s: Servicio) => s.activo))
+      const motos = motRes?.data ?? []
+      if (Array.isArray(motos)) setMotorizados(motos)
     })
   }, [])
 
@@ -80,19 +91,26 @@ export default function Home() {
 
       {/* ══ HERO ══════════════════════════════════════════════════════ */}
       <section className="relative min-h-screen bg-thimpson-teal flex items-center overflow-hidden">
-        {/* Patrón geométrico de fondo */}
+        {/* Brillante negro gloss */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.04]"
+          {/* Gloss diagonal shine */}
+          <div className="absolute inset-0 opacity-[0.07]"
+            style={{ background: 'linear-gradient(135deg, transparent 30%, #ffffff 50%, transparent 70%)' }} />
+          {/* Yellow glow corners */}
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.05]"
             style={{ background: 'radial-gradient(circle, #FBB03B 0%, transparent 70%)' }} />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-[0.03]"
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] opacity-[0.04]"
             style={{ background: 'radial-gradient(circle, #FBB03B 0%, transparent 70%)' }} />
-          {/* Líneas diagonales decorativas */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+          {/* Subtle grid pattern */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.04]" xmlns="http://www.w3.org/2000/svg">
             <defs><pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
               <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#FBB03B" strokeWidth="1"/>
             </pattern></defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
           </svg>
+          {/* Bottom vignette */}
+          <div className="absolute bottom-0 left-0 right-0 h-48"
+            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.5), transparent)' }} />
         </div>
 
         <div className="relative z-10 max-w-6xl mx-auto px-5 w-full py-24 pt-28 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -235,7 +253,7 @@ export default function Home() {
 
           <div className="text-center mt-12">
             <Link to="/registro"
-              className="inline-block bg-thimpson-teal text-thimpson-yellow font-bold text-base px-10 py-4 hover:bg-thimpson-teal-2 transition-colors">
+              className="inline-block bg-thimpson-teal text-thimpson-yellow font-bold text-base px-10 py-4 hover:bg-thimpson-black-2 transition-colors">
               Empezar ahora
             </Link>
           </div>
@@ -294,6 +312,108 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ══ SOBRE EL DUEÑO ════════════════════════════════════════════ */}
+      <section className="py-10 md:py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-5">
+          <div className="text-center mb-14">
+            <span className="text-thimpson-yellow font-bold text-xs uppercase tracking-widest">Nuestra historia</span>
+            <h2 className="text-3xl md:text-4xl font-black text-thimpson-teal mt-2">
+              Detrás de <span className="text-thimpson-yellow">Thimpson</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div className="flex justify-center">
+              <div className="relative inline-block">
+                <img
+                  src="/CEO.jpeg"
+                  alt="CEO — Servicio Express Thimpson"
+                  className="w-72 h-auto border-4 border-thimpson-yellow shadow-xl"
+                />
+                <div className="absolute -bottom-3 -right-3 bg-thimpson-yellow px-4 py-2 text-center">
+                  <span className="block text-thimpson-teal font-black text-sm leading-tight">Allan Thimpson</span>
+                  <span className="block text-thimpson-teal/70 text-[10px] font-bold uppercase tracking-wide">Fundador &amp; CEO</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-black text-thimpson-teal mb-4">
+                Transformando el delivery en Ocotal
+              </h3>
+              <p className="text-gray-600 leading-relaxed mb-4">
+                Servicio Express Thimpson nació de la visión de conectar a las personas con lo que necesitan,
+                de manera rápida, segura y confiable. Desde Ocotal, Nueva Segovia, hemos construido un ecosistema
+                que no solo lleva paquetes, sino que impulsa el comercio local.
+              </p>
+              <p className="text-gray-600 leading-relaxed mb-6">
+                Hoy, con un equipo de motorizados verificados y una plataforma tecnológica integrada,
+                seguimos creciendo para ofrecer el mejor servicio de delivery, mandados, encomiendas y
+                transporte en la zona norte, central y pacífico de Nicaragua.
+              </p>
+              <div className="flex items-center gap-5 text-sm text-gray-500">
+                <div>
+                  <span className="block text-thimpson-yellow font-black text-lg">Claro</span>
+                  <span className="font-medium">+505 8415 9112</span>
+                </div>
+                <div className="w-px h-8 bg-gray-200" />
+                <div>
+                  <span className="block text-tigo font-black text-lg">Tigo</span>
+                  <span className="font-medium">+505 8593 2295</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ MOTORIZADOS ══════════════════════════════════════════════ */}
+      <section className="py-16 md:py-20 bg-gray-50">
+        <div className="max-w-5xl mx-auto px-5">
+          <div className="text-center mb-12">
+            <span className="text-thimpson-yellow font-bold text-xs uppercase tracking-widest">Nuestro equipo</span>
+            <h2 className="text-3xl md:text-4xl font-black text-thimpson-teal mt-2">
+              Motorizados verificados
+            </h2>
+            <p className="text-gray-500 text-sm mt-2 max-w-lg mx-auto">Ellos son los que hacen que todo llegue a tiempo. Conocé a nuestro equipo de motorizados.</p>
+          </div>
+
+          {motorizados.length === 0 ? (
+            <div className="text-center py-16">
+              <svg className="mx-auto mb-4 text-gray-300" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="7" r="4"/><path d="M1 21v-2a4 4 0 0 1 4-4h.1"/><circle cx="17" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M13 7a4 4 0 0 0-8 0"/>
+              </svg>
+              <p className="text-gray-400 text-sm font-medium">Aún no hay motorizados para mostrar</p>
+              <p className="text-gray-300 text-xs mt-1">Pronto nos acompañarán nuevos miembros del equipo.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {motorizados.map(m => (
+                <div key={m.id}
+                  className="bg-white border border-gray-100/80 px-6 py-6 flex items-center gap-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-0.5">
+                  <div className="w-14 h-14 bg-thimpson-teal flex items-center justify-center font-black text-thimpson-yellow text-xl flex-shrink-0">
+                    {m.perfiles.avatar_url
+                      ? <img src={m.perfiles.avatar_url} alt="" className="w-full h-full object-cover" />
+                      : m.perfiles.nombre_completo.charAt(0).toUpperCase()
+                    }
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-gray-900 text-sm truncate">{m.perfiles.nombre_completo}</h3>
+                    {m.perfiles.telefono && (
+                      <p className="text-xs text-gray-400 mt-0.5">{m.perfiles.telefono}</p>
+                    )}
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span className={`w-1.5 h-1.5 ${m.disponible ? 'bg-green-500' : 'bg-gray-300'}`} />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">{m.disponible ? 'Disponible' : 'En servicio'}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* ══ BANNER FINAL ══════════════════════════════════════════════ */}
       <section className="py-16 bg-thimpson-yellow">
         <div className="max-w-4xl mx-auto px-5 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -305,7 +425,7 @@ export default function Home() {
           </div>
           <div className="flex gap-4 flex-shrink-0">
             <Link to="/registro"
-              className="bg-thimpson-teal text-thimpson-yellow font-bold text-sm px-7 py-4 hover:bg-thimpson-teal-2 transition-colors">
+              className="bg-thimpson-teal text-thimpson-yellow font-bold text-sm px-7 py-4 hover:bg-thimpson-black-2 transition-colors">
               Crear cuenta gratis
             </Link>
             <a href={wa} target="_blank" rel="noreferrer"

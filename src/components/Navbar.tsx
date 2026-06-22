@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import SuscribirseModal from './SuscribirseModal'
 
 const LINKS = [
   { to: '/',              label: 'Inicio',         end: true  },
   { to: '/servicios',     label: 'Servicios',      end: false },
+  { to: '/marketplace',   label: 'Marketplace',    end: false },
   { to: '/como-funciona', label: 'Cómo funciona',  end: false },
   { to: '/contacto',      label: 'Contacto',       end: false },
 ]
@@ -14,6 +16,7 @@ export default function Navbar() {
   const location = useLocation()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [susModal, setSusModal] = useState(false)
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 50)
@@ -24,17 +27,18 @@ export default function Navbar() {
   useEffect(() => setOpen(false), [location.pathname])
 
   const navBg = scrolled
-    ? 'bg-white shadow-md'
-    : 'bg-transparent'
+    ? 'bg-white/95 backdrop-blur-md shadow-md'
+    : 'bg-thimpson-teal/90 backdrop-blur-sm'
 
   const linkColor = scrolled
-    ? 'text-gray-700 hover:text-thimpson-teal'
-    : 'text-white/80 hover:text-white'
+    ? 'text-gray-700 hover:text-thimpson-yellow font-medium'
+    : 'text-white/90 hover:text-thimpson-yellow font-medium'
 
-  const logoColor = scrolled ? 'text-thimpson-teal' : 'text-white'
-  const subColor  = scrolled ? 'text-thimpson-teal/50' : 'text-white/40'
+  const logoColor = scrolled ? 'text-thimpson-black' : 'text-thimpson-yellow'
+  const subColor  = scrolled ? 'text-thimpson-black/60' : 'text-white/50'
 
   return (
+    <Fragment>
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${navBg}`}>
       <div className="max-w-6xl mx-auto px-5 h-16 flex items-center gap-8">
 
@@ -88,6 +92,10 @@ export default function Navbar() {
                 className={`text-sm font-medium transition-colors ${linkColor}`}>
                 Iniciar sesión
               </Link>
+              <button onClick={() => setSusModal(true)}
+                className={`text-sm font-medium transition-colors ${linkColor}`}>
+                Suscribirse
+              </button>
               <Link to="/registro"
                 className="bg-thimpson-yellow text-thimpson-teal text-sm font-bold px-5 py-2.5 hover:bg-thimpson-yellow-d transition-colors shadow-md">
                 Pedir ahora
@@ -99,7 +107,7 @@ export default function Navbar() {
         {/* Hamburger mobile */}
         <button
           onClick={() => setOpen(o => !o)}
-          className={`md:hidden ml-auto flex flex-col gap-1.5 p-1 transition-colors ${scrolled ? 'text-thimpson-teal' : 'text-white'}`}
+          className={`md:hidden ml-auto flex flex-col gap-1.5 p-1 transition-colors ${scrolled ? 'text-thimpson-black' : 'text-white'}`}
           aria-label="Menú">
           <span className={`block w-6 h-0.5 bg-current transition-transform ${open ? 'rotate-45 translate-y-2' : ''}`} />
           <span className={`block w-6 h-0.5 bg-current transition-opacity ${open ? 'opacity-0' : ''}`} />
@@ -109,12 +117,12 @@ export default function Navbar() {
 
       {/* Menú móvil */}
       {open && (
-        <div className="md:hidden bg-thimpson-teal border-t border-white/10 px-5 py-4">
+        <div className="md:hidden bg-thimpson-teal border-t border-white/10 px-5 py-4 shadow-xl">
           {LINKS.map(l => (
             <NavLink key={l.to} to={l.to} end={l.end}
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
-                `block py-3 text-sm font-medium border-b border-white/10 ${isActive ? 'text-thimpson-yellow' : 'text-white/80'}`
+                `block py-3 text-sm font-medium border-b border-white/10 transition-colors ${isActive ? 'text-thimpson-yellow font-bold' : 'text-white/80 hover:text-white'}`
               }>
               {l.label}
             </NavLink>
@@ -123,22 +131,26 @@ export default function Navbar() {
             {user ? (
               <>
                 <Link to="/dashboard" onClick={() => setOpen(false)}
-                  className="text-center bg-thimpson-yellow text-thimpson-teal font-bold py-3 text-sm">
+                  className="text-center bg-thimpson-yellow text-thimpson-teal font-bold py-3 text-sm hover:bg-thimpson-yellow-d transition-colors">
                   Mi cuenta
                 </Link>
                 <button onClick={() => { logout(); setOpen(false) }}
-                  className="text-sm text-white/40 py-2">
+                  className="text-sm text-white/60 hover:text-red-400 py-2 transition-colors">
                   Cerrar sesión
                 </button>
               </>
             ) : (
               <>
                 <Link to="/login" onClick={() => setOpen(false)}
-                  className="text-center border-2 border-white/30 text-white font-medium py-3 text-sm">
+                  className="text-center border-2 border-white/30 text-white font-semibold py-3 text-sm hover:bg-white/10 transition-colors">
                   Iniciar sesión
                 </Link>
+                <button onClick={() => { setSusModal(true); setOpen(false) }}
+                  className="text-center border-2 border-thimpson-yellow text-thimpson-yellow font-semibold py-3 text-sm hover:bg-thimpson-yellow/10 transition-colors">
+                  Suscribirse
+                </button>
                 <Link to="/registro" onClick={() => setOpen(false)}
-                  className="text-center bg-thimpson-yellow text-thimpson-teal font-bold py-3 text-sm">
+                  className="text-center bg-thimpson-yellow text-thimpson-teal font-bold py-3 text-sm hover:bg-thimpson-yellow-d transition-colors">
                   Pedir ahora
                 </Link>
               </>
@@ -147,5 +159,7 @@ export default function Navbar() {
         </div>
       )}
     </header>
+    <SuscribirseModal abierto={susModal} cerrar={() => setSusModal(false)} />
+    </Fragment>
   )
 }

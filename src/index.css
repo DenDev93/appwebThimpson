@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ════════════════════════════════════════════════════════════════
+   THIMPSON EXPRESS — Colores de marca (Web Pública)
+   ════════════════════════════════════════════════════════════════ */
+:root {
+  /* Colores principales de marca */
+  --thimpson-yellow:    #FBB03B;
+  --thimpson-black:     #000000;
+  --thimpson-white:     #FFFFFF;
+  --thimpson-dark-teal: #000000;
+  --thimpson-brown:     #BC8A5F;
+
+  /* Colores de contacto externo */
+  --whatsapp-green:     #25D366;
+  --tigo-blue:          #00377B;
+}
+
 /* ─ Reset: cero esquinas redondeadas ─ */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -44,3 +60,18 @@ body {
 /* ─ Scrollbar ─ */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-thumb { background: #ddd; }
+
+/* ─ Input underline style ─ */
+.input-underline {
+  width: 100%;
+  background: #fafafa;
+  border: 0;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: #111827;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.input-underline:focus { border-color: #FBB03B; }
+.input-underline::placeholder { color: #d1d5db; }

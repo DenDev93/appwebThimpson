@@ -75,7 +75,7 @@ export default function Registro() {
               </p>
 
               <button type="submit" disabled={loading}
-                className="w-full bg-thimpson-teal text-thimpson-yellow font-bold py-4 text-sm hover:bg-thimpson-teal-2 transition-colors disabled:opacity-50">
+                className="w-full bg-thimpson-teal text-thimpson-yellow font-bold py-4 text-sm hover:bg-thimpson-black-2 transition-colors disabled:opacity-50">
                 {loading ? 'Creando cuenta...' : 'Crear mi cuenta gratis'}
               </button>
             </form>
